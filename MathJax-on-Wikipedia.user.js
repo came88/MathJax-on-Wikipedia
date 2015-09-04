@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        MathJax on Wikipedias
 // @namespace   https://github.com/came88
-// @version     0.1.4
+// @version     0.1.5
 // @description Replace PNG math images with MathJax HTML+CSS rendering on all wikipedias
 // @author      Lorenzo Cameroni
 // @license     GPLv2; https://www.gnu.org/licenses/gpl-2.0.html
@@ -37,6 +37,39 @@
  *
  */
 
+var commonConfig = {
+	jax: [],
+	preRemoveClass: "MathJax_hide_me",
+	/*
+	tex2jax : {
+		inlineMath : [],
+		displayMath : [],
+		processRefs : false,
+		processEnvironments : false
+	},
+	*/
+	extensions: ["Safe.js"],
+	TeX: {
+		// Macros not defined in the TeX extension "mediawiki-texvc.js", see https://github.com/mathjax/MathJax/blob/master/unpacked/extensions/TeX/mediawiki-texvc.js
+		Macros: {
+			sen: "\\operatorname{sen}",	// alternative symbol of the sinus function used in some countries, recognised by wikipedia server software
+			sgn: "\\operatorname{sgn}",	// signum function, recognised by wikipedia server software
+			pagecolor: ["", 1],			// MathJax does not support background color
+			P: "\\unicode{xB6}"			// ¶ symbol
+		},
+		// Uncomment to easily find missing TeX and LaTeX macros
+		/*
+		noUndefined: {
+			disabled: true
+		},
+		noErrors: {
+			disabled: true
+		},
+		*/
+		extensions: ["autoload-all.js", "mediawiki-texvc.js"]
+	}
+};
+ 
 function wikipediaPNG(images) {
 	console.log("Replacing PNG images with MathJax...");
 	var script;
@@ -53,7 +86,6 @@ function wikipediaPNG(images) {
 		} else {
 			script.type = "math/tex";
 		}
-		// script[(window.opera ? "innerHTML" : "text")] = "\\class{" + img.className + "}{\\displaystyle " + tex + "}";
 		script[(window.opera ? "innerHTML" : "text")] = "\\displaystyle " + tex;
 		$(span).after(script);
 	}
@@ -61,41 +93,11 @@ function wikipediaPNG(images) {
 	// Load MathJax
 	script = document.createElement("script");
 	script.type = "text/x-mathjax-config";
-	var config = {
-		jax: [],
-		preRemoveClass: "MathJax_hide_me",
-		/*
-		tex2jax : {
-			inlineMath : [],
-			displayMath : [],
-			processRefs : false,
-			processEnvironments : false
-		},
-		*/
-		preview: "none",
-		"CHTML-preview": {
-			disabled: true
-		},
-		extensions: ["Safe.js"],
-		TeX: {
-			// Macros not defined in the TeX extension "mediawiki-texvc.js", see https://github.com/mathjax/MathJax/blob/master/unpacked/extensions/TeX/mediawiki-texvc.js
-			Macros: {
-				sen: "\\operatorname{sen}",	// alternative symbol of the sinus function used in some countries, recognised by wikipedia server software
-				sgn: "\\operatorname{sgn}",	// signum function, recognised by wikipedia server software
-				pagecolor: ["", 1],			// MathJax does not support background color
-				P: "\\unicode{xB6}"			// ¶ symbol
-			},
-			// Uncomment the next section for debug
-			/*
-			noUndefined: {
-				disabled: true
-			},
-			noErrors: {
-				disabled: true
-			},
-			*/
-			extensions: ["autoload-all.js", "mediawiki-texvc.js"]
-		}
+	var config = commonConfig;
+	// Disable fast Common-HTML preview (we already have PNG previews...)
+	config.preview: "none";
+	config."CHTML-preview": {
+		disabled: true
 	};
 	script[(window.opera ? "innerHTML" : "text")] = "MathJax.Hub.Config(" + JSON.stringify(config) + ");";
     // console.log(script[(window.opera ? "innerHTML" : "text")]);
@@ -121,7 +123,6 @@ function wikipediaTextual(spans) {
 			script.type = "math/tex";
 		}
 		span.className = "MathJax_hide_me";
-		// script[(window.opera ? "innerHTML" : "text")] = "\\class{" + img.className + "}{\\displaystyle " + tex + "}";
 		script[(window.opera ? "innerHTML" : "text")] = "\\displaystyle " + tex;
 		$(span).after(script);
 	}
@@ -129,34 +130,7 @@ function wikipediaTextual(spans) {
 	// Load MathJax
 	script = document.createElement("script");
 	script.type = "text/x-mathjax-config";
-	var config = {
-		jax: [],
-		preRemoveClass: "MathJax_hide_me",
-		preview: "none",
-		"CHTML-preview": {
-			disabled: true
-		},
-		extensions: ["Safe.js"],
-		TeX: {
-			// Macros not defined in the TeX extension "mediawiki-texvc.js", see https://github.com/mathjax/MathJax/blob/master/unpacked/extensions/TeX/mediawiki-texvc.js
-			Macros: {
-				sen: "\\operatorname{sen}",	// alternative symbol of the sinus function used in some countries, recognised by wikipedia server software
-				sgn: "\\operatorname{sgn}",	// signum function, recognised by wikipedia server software
-				pagecolor: ["", 1],			// MathJax does not support background color
-				P: "\\unicode{xB6}"			// ¶ symbol
-			},
-			// Uncomment the next section for debug
-			/*
-			noUndefined: {
-				disabled: true
-			},
-			noErrors: {
-				disabled: true
-			},
-			*/
-			extensions: ["autoload-all.js", "mediawiki-texvc.js"]
-		}
-	};
+	var config = commonConfig;
 	script[(window.opera ? "innerHTML" : "text")] = "MathJax.Hub.Config(" + JSON.stringify(config) + ");";
     console.log(script[(window.opera ? "innerHTML" : "text")]);
 	$("head").append(script);
