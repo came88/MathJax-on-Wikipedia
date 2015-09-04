@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        MathJax on Wikipedias
 // @namespace   https://github.com/came88
-// @version     0.1.3
+// @version     0.1.4
 // @description Replace PNG math images with MathJax HTML+CSS rendering on all wikipedias
 // @author      Lorenzo Cameroni
 // @license     GPLv2; https://www.gnu.org/licenses/gpl-2.0.html
@@ -106,12 +106,67 @@ function wikipediaPNG(images) {
 	$("head").append(script);
 }
 
-function wikipediaTextual() {
+function wikipediaTextual(spans) {
 	console.log("Replacing LaTeX with MathJax...");
-	console.log("Not yet implemented");
+
+	var script;
+	for (var i = 0; i < spans.length; i++) {
+		var span = spans.get(i);
+		var tex = span.innerHTML;
+		tex = tex.substring(1, tex.length - 2);
+		script = document.createElement("script");
+		if (span.className.indexOf("mwe-math-fallback-source-display") > -1) {
+			script.type = "math/tex; mode=display";
+		} else {
+			script.type = "math/tex";
+		}
+		span.className = "MathJax_hide_me";
+		// script[(window.opera ? "innerHTML" : "text")] = "\\class{" + img.className + "}{\\displaystyle " + tex + "}";
+		script[(window.opera ? "innerHTML" : "text")] = "\\displaystyle " + tex;
+		$(span).after(script);
+	}
+
+	// Load MathJax
+	script = document.createElement("script");
+	script.type = "text/x-mathjax-config";
+	var config = {
+		jax: [],
+		preRemoveClass: "MathJax_hide_me",
+		preview: "none",
+		"CHTML-preview": {
+			disabled: true
+		},
+		extensions: ["Safe.js"],
+		TeX: {
+			// Macros not defined in the TeX extension "mediawiki-texvc.js", see https://github.com/mathjax/MathJax/blob/master/unpacked/extensions/TeX/mediawiki-texvc.js
+			Macros: {
+				sen: "\\operatorname{sen}",	// alternative symbol of the sinus function used in some countries, recognised by wikipedia server software
+				sgn: "\\operatorname{sgn}",	// signum function, recognised by wikipedia server software
+				pagecolor: ["", 1],			// MathJax does not support background color
+				P: "\\unicode{xB6}"			// ¶ symbol
+			},
+			// Uncomment the next section for debug
+			/*
+			noUndefined: {
+				disabled: true
+			},
+			noErrors: {
+				disabled: true
+			},
+			*/
+			extensions: ["autoload-all.js", "mediawiki-texvc.js"]
+		}
+	};
+	script[(window.opera ? "innerHTML" : "text")] = "MathJax.Hub.Config(" + JSON.stringify(config) + ");";
+    console.log(script[(window.opera ? "innerHTML" : "text")]);
+	$("head").append(script);
+	script = document.createElement("script");
+	script.type = "text/javascript";
+	script.src = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML,Safe";
+	$("head").append(script);
 }
 
-function wikipediaMathML(mathML) {
+function wikipediaMathML() {
 	console.log("Replacing MathML with MathJax...");
 	
 	// Load MathJax
@@ -150,11 +205,11 @@ if (window.MathJax === undefined && (window.unsafeWindow === undefined || window
 	} else {
 		var mathML = $("math");
 		if (mathML.length > 0) {
-			wikipediaMathML(mathML);
+			wikipediaMathML();
 		} else {
-			var textual = $("span.tex");
-			if (textual.length > 0) {
-				wikipediaTextual(textual);
+			var spans = $("span.tex");
+			if (spans.length > 0) {
+				wikipediaTextual(spans);
 			} else {
 				console.log("Math seems unused on this page. MathJax will not be loaded.");
 			}
