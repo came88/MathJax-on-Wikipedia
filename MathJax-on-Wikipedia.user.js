@@ -37,14 +37,9 @@
  *
  */
 
-// Load MathJax only if no one else (the webpage, another browser extension...) has already loaded it
-if (window.MathJax === undefined && (window.unsafeWindow === undefined || window.unsafeWindow.MathJax === undefined)) {
-	console.log("Loading MathJax in Wikipedia...");
-	var images = $("img.tex");
-	if (images.length === 0) {
-		return;
-	}
-
+function wikipediaPNG(images) {
+	console.log("Replacing PNG images with MathJax...");
+	var script;
 	for (var i = 0; i < images.length; i++) {
 		var img = images.get(i);
 		var tex = img.alt;
@@ -52,7 +47,7 @@ if (window.MathJax === undefined && (window.unsafeWindow === undefined || window
 		span.className = "MathJax_hide_me";
 		$(img).before(span);
 		$(img).detach().appendTo(span);
-		var script = document.createElement("script");
+		script = document.createElement("script");
 		if (img.className.indexOf("mwe-math-fallback-image-display") > -1) {
 			script.type = "math/tex; mode=display";
 		} else {
@@ -64,7 +59,6 @@ if (window.MathJax === undefined && (window.unsafeWindow === undefined || window
 	}
 
 	//  Load MathJax
-	var script;
 	script = document.createElement("script");
 	script.type = "text/x-mathjax-config";
 	var config = {
@@ -74,6 +68,7 @@ if (window.MathJax === undefined && (window.unsafeWindow === undefined || window
 		tex2jax : {
 			inlineMath : [],
 			displayMath : [],
+			processRefs : false,
 			processEnvironments : false
 		},
 		*/
@@ -109,6 +104,35 @@ if (window.MathJax === undefined && (window.unsafeWindow === undefined || window
 	script.type = "text/javascript";
 	script.src = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML,Safe";
 	$("head").append(script);
+}
+
+function wikipediaTextual() {
+	console.log("Replacing LaTeX with MathJax...");
+	console.log("Not yet implemented");
+}
+
+function wikipediaMathML(mathML) {
+	console.log("Replacing MathML with MathJax...");
+	console.log("Not yet implemented");
+}
+
+// Load MathJax only if no one else (the webpage, another browser extension...) has already loaded it
+if (window.MathJax === undefined && (window.unsafeWindow === undefined || window.unsafeWindow.MathJax === undefined)) {
+	console.log("Loading MathJax in Wikipedia...");
+	var images = $("img.tex");
+	if (images.length > 0) {
+		wikipediaPNG(images);
+	} else {
+		var mathML = $("math");
+		if (mathML.length > 0) {
+			wikipediaMathML(mathML);
+		} else {
+			var textual = $("span.tex");
+			if (textual.length > 0) {
+				wikipediaTextual(textual);
+			}
+		}
+	}
 } else {
 	console.log("MathJax seems to be already loaded, doing nothing.");
 }
