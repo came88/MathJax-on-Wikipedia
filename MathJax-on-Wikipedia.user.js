@@ -96,7 +96,7 @@ function wikipediaPNG(images) {
 	var config = commonConfig;
 	// Disable fast Common-HTML preview (we already have PNG previews...)
 	config.preview = "none";
-	config."CHTML-preview" = {
+	config["CHTML-preview"] = {
 		disabled: true
 	};
 	script[(window.opera ? "innerHTML" : "text")] = "MathJax.Hub.Config(" + JSON.stringify(config) + ");";
