@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        MathJax on Wikipedias
 // @namespace   https://github.com/came88
-// @version     0.1.2
+// @version     0.1.3
 // @description Replace PNG math images with MathJax HTML+CSS rendering on all wikipedias
 // @author      Lorenzo Cameroni
 // @license     GPLv2; https://www.gnu.org/licenses/gpl-2.0.html
@@ -58,7 +58,7 @@ function wikipediaPNG(images) {
 		$(span).after(script);
 	}
 
-	//  Load MathJax
+	// Load MathJax
 	script = document.createElement("script");
 	script.type = "text/x-mathjax-config";
 	var config = {
@@ -113,7 +113,32 @@ function wikipediaTextual() {
 
 function wikipediaMathML(mathML) {
 	console.log("Replacing MathML with MathJax...");
-	console.log("Not yet implemented");
+	
+	// Load MathJax
+	script = document.createElement("script");
+	script.type = "text/x-mathjax-config";
+	var config = {
+		extensions: ["Safe.js"],
+		preview: "none",
+		"CHTML-preview": {
+			disabled: true
+		}/*,
+		"HTML-CSS": {
+			EqnChunk: 1,
+			EqnChunkFactor: 1,
+			EqnChunkDelay: 10
+		}*/
+	};
+	script[(window.opera ? "innerHTML" : "text")] = "MathJax.Hub.Config(" + JSON.stringify(config) + ");";
+    // console.log(script[(window.opera ? "innerHTML" : "text")]);
+	$("head").append(script);
+	$("meta.mwe-math-fallback-image-inline").remove();
+	$("meta.mwe-math-fallback-image-display").remove();
+	$(".mwe-math-mathml-a11y").removeClass("mwe-math-mathml-a11y");
+	script = document.createElement("script");
+	script.type = "text/javascript";
+	script.src = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=MML_HTMLorMML,Safe";
+	$("head").append(script);
 }
 
 // Load MathJax only if no one else (the webpage, another browser extension...) has already loaded it
@@ -130,6 +155,8 @@ if (window.MathJax === undefined && (window.unsafeWindow === undefined || window
 			var textual = $("span.tex");
 			if (textual.length > 0) {
 				wikipediaTextual(textual);
+			} else {
+				console.log("Math seems unused on this page. MathJax will not be loaded.");
 			}
 		}
 	}
