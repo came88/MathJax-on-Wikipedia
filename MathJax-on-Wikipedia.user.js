@@ -1,15 +1,41 @@
 // ==UserScript==
-// @name         MathJax on Wikipedias
-// @namespace    https://github.com/came88
-// @version      0.1.1
-// @description  Replace PNG math images with MathJax HTML+CSS rendering on all wikipedias
-// @author       Lorenzo Cameroni
-// @homepage     https://github.com/came88/MathJax-on-Wikipedia
-// @downloadURL  https://github.com/came88/MathJax-on-Wikipedia/raw/master/MathJax-on-Wikipedia.user.js
-// @match        https://*.wikipedia.org/wiki/*
-// @require      http://code.jquery.com/jquery-1.11.3.min.js
-// @grant        none
+// @name        MathJax on Wikipedias
+// @namespace   https://github.com/came88
+// @version     0.1.2
+// @description Replace PNG math images with MathJax HTML+CSS rendering on all wikipedias
+// @author      Lorenzo Cameroni
+// @license     GPLv2; https://www.gnu.org/licenses/gpl-2.0.html
+// @homepage    https://github.com/came88/MathJax-on-Wikipedia
+// @downloadURL https://github.com/came88/MathJax-on-Wikipedia/raw/master/MathJax-on-Wikipedia.user.js
+// @match       https://*.wikipedia.org/wiki/*
+// @require     http://code.jquery.com/jquery-1.11.3.min.js
+// @grant       unsafeWindow
 // ==/UserScript==
+
+/*
+ *
+ * MathJax on Wikipedias
+ * 
+ * This user script replace math PNG images in wikipedia with MathJax rendering of original formulas,
+ * while keeping original PNG as preview until MathJax has finished rendering.
+ * 
+ * Copyright (C) 2015  Lorenzo Cameroni
+ * 
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *
+ */
 
 // Load MathJax only if no one else (the webpage, another browser extension...) has already loaded it
 if (window.MathJax === undefined && (window.unsafeWindow === undefined || window.unsafeWindow.MathJax === undefined)) {
