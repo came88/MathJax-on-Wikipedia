@@ -1,16 +1,19 @@
 // ==UserScript==
 // @name         MathJax on Wikipedias
 // @namespace    https://github.com/came88
-// @version      0.1
+// @version      0.1.1
 // @description  Replace PNG math images with MathJax HTML+CSS rendering on all wikipedias
 // @author       Lorenzo Cameroni
+// @homepage     https://github.com/came88/MathJax-on-Wikipedia
+// @downloadURL  https://github.com/came88/MathJax-on-Wikipedia/raw/master/MathJax-on-Wikipedia.user.js
 // @match        https://*.wikipedia.org/wiki/*
 // @require      http://code.jquery.com/jquery-1.11.3.min.js
 // @grant        none
 // ==/UserScript==
 
-if ((window.unsafeWindow == null ? window : unsafeWindow).MathJax == null) {
-
+// Load MathJax only if no one else (the webpage, another browser extension...) has already loaded it
+if (window.MathJax === undefined && (window.unsafeWindow === undefined || window.unsafeWindow.MathJax === undefined)) {
+	console.log("Loading MathJax in Wikipedia...");
 	var images = $("img.tex");
 	if (images.length === 0) {
 		return;
@@ -80,4 +83,6 @@ if ((window.unsafeWindow == null ? window : unsafeWindow).MathJax == null) {
 	script.type = "text/javascript";
 	script.src = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML,Safe";
 	$("head").append(script);
+} else {
+	console.log("MathJax seems to be already loaded, doing nothing.");
 }
