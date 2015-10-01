@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        MathJax on Wikipedias
 // @namespace   https://github.com/came88
-// @version     0.1.5
+// @version     0.1.6
 // @description Replace PNG math images with MathJax HTML+CSS rendering on all wikipedias
 // @author      Lorenzo Cameroni
 // @license     GPLv2; https://www.gnu.org/licenses/gpl-2.0.html
@@ -40,14 +40,12 @@
 var commonConfig = {
 	jax: [],
 	preRemoveClass: "MathJax_hide_me",
-	/*
 	tex2jax : {
 		inlineMath : [],
 		displayMath : [],
 		processRefs : false,
 		processEnvironments : false
 	},
-	*/
 	extensions: ["Safe.js"],
 	TeX: {
 		// Macros not defined in the TeX extension "mediawiki-texvc.js", see https://github.com/mathjax/MathJax/blob/master/unpacked/extensions/TeX/mediawiki-texvc.js
