@@ -8,7 +8,7 @@
 // @homepage    https://github.com/came88/MathJax-on-Wikipedia
 // @downloadURL https://github.com/came88/MathJax-on-Wikipedia/raw/master/MathJax-on-Wikipedia.user.js
 // @match       https://*.wikipedia.org/wiki/*
-// @require     http://code.jquery.com/jquery-1.11.3.min.js
+// @require     https://code.jquery.com/jquery-1.11.3.min.js
 // @grant       unsafeWindow
 // ==/UserScript==
 
