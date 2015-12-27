@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        MathJax on Wikipedias
 // @namespace   https://github.com/came88
-// @version     0.1.6
+// @version     0.1.7
 // @description Replace PNG math images with MathJax HTML+CSS rendering on all wikipedias
 // @author      Lorenzo Cameroni
 // @license     GPLv2; https://www.gnu.org/licenses/gpl-2.0.html
@@ -50,10 +50,18 @@ var commonConfig = {
 	TeX: {
 		// Macros not defined in the TeX extension "mediawiki-texvc.js", see https://github.com/mathjax/MathJax/blob/master/unpacked/extensions/TeX/mediawiki-texvc.js
 		Macros: {
-			sen: "\\operatorname{sen}",	// alternative symbol of the sinus function used in some countries, recognised by wikipedia server software
-			sgn: "\\operatorname{sgn}",	// signum function, recognised by wikipedia server software
-			pagecolor: ["", 1],			// MathJax does not support background color
-			P: "\\unicode{xB6}"			// ¶ symbol
+			sen: "\\operatorname{sen}",		// alternative symbol of the sinus function used in some countries, recognised by wikipedia server software
+			sgn: "\\operatorname{sgn}",		// signum function, recognised by wikipedia server software
+			AA: "\\unicode[.8,0]{x212B}",	// angstrom symbol, see https://github.com/mathjax/MathJax/issues/795#issuecomment-41437894
+			Digamma: "F",
+			euro: "\\unicode{0x20AC}",
+			geneuro: "\\unicode{0x20AC}",
+			geneuronarrow: "\\unicode{0x20AC}",
+			geneurowide: "\\unicode{0x20AC}",
+			officialeuro: "\\unicode{0x20AC}",
+			textvisiblespace: "\\unicode{x2423}",
+			pagecolor: ["", 1],				// MathJax does not support background color
+			P: "\\unicode{xB6}"				// ¶ symbol
 		},
 		// Uncomment to easily find missing TeX and LaTeX macros
 		/*
