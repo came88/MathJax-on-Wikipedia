@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        MathJax on Wikipedias
 // @namespace   https://github.com/came88
-// @version     0.1.7
+// @version     0.1.8
 // @description Replace PNG math images with MathJax HTML+CSS rendering on all wikipedias
 // @author      Lorenzo Cameroni
 // @license     GPLv2; https://www.gnu.org/licenses/gpl-2.0.html
@@ -61,7 +61,8 @@ var commonConfig = {
 			officialeuro: "\\unicode{0x20AC}",
 			textvisiblespace: "\\unicode{x2423}",
 			pagecolor: ["", 1],				// MathJax does not support background color
-			P: "\\unicode{xB6}"				// ¶ symbol
+			P: "\\unicode{xB6}",			// ¶ symbol
+			emph: "",						// emph does nothing on wikipedia but it's sometimes used
 		},
 		// Uncomment to easily find missing TeX and LaTeX macros
 		/*
