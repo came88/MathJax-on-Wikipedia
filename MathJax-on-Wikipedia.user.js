@@ -8,7 +8,7 @@
 // @homepage    https://github.com/came88/MathJax-on-Wikipedia
 // @downloadURL https://github.com/came88/MathJax-on-Wikipedia/raw/master/MathJax-on-Wikipedia.user.js
 // @match       https://*.wikipedia.org/wiki/*
-// @require     https://code.jquery.com/jquery-1.11.3.min.js
+// @require     https://code.jquery.com/jquery-2.2.4.min.js
 // @grant       unsafeWindow
 // ==/UserScript==
 
@@ -153,27 +153,43 @@ function wikipediaMathML() {
 	// Load MathJax
 	script = document.createElement("script");
 	script.type = "text/x-mathjax-config";
-	var config = {
-		extensions: ["Safe.js"],
-		preview: "none",
-		"CHTML-preview": {
-			disabled: true
-		}/*,
-		"HTML-CSS": {
-			EqnChunk: 1,
-			EqnChunkFactor: 1,
-			EqnChunkDelay: 10
-		}*/
+	var config = commonConfig;
+	// Disable fast Common-HTML preview (we already have PNG previews...)
+	config.preview = "none";
+	config["CHTML-preview"] = {
+		disabled: true
 	};
 	script[(window.opera ? "innerHTML" : "text")] = "MathJax.Hub.Config(" + JSON.stringify(config) + ");";
     // console.log(script[(window.opera ? "innerHTML" : "text")]);
 	$("head").append(script);
-	$("meta.mwe-math-fallback-image-inline").remove();
-	$("meta.mwe-math-fallback-image-display").remove();
-	$(".mwe-math-mathml-a11y").removeClass("mwe-math-mathml-a11y");
+	
+	// swap span, so preview is BEFORE MathML
+	var maths = $(".mwe-math-mathml-a11y");
+	for (i = 0; i < maths.length; i++) {
+		spanMath = $(maths[i]);
+		img = spanMath.parent().find("img");
+		var span = document.createElement("span");
+		span.className = "MathJax_hide_me";
+		$(img).before(span);
+		$(img).detach().appendTo(span);
+		tex = spanMath.find("annotation").text();
+		
+		script = document.createElement("script");
+		if (maths[i].className.indexOf("mwe-math-fallback-source-display") > -1) {
+			script.type = "math/tex; mode=display";
+		} else {
+			script.type = "math/tex";
+		}
+		script[(window.opera ? "innerHTML" : "text")] = "\\displaystyle " + tex;
+		spanMath.parent().append(script);
+	}
+	
+//	$(".mwe-math-fallback-image-inline, .mwe-math-fallback-image-display").addClass("MathJax_hide_me");
+//	$(".mwe-math-mathml-a11y").removeClass("mwe-math-mathml-a11y");
+	
 	script = document.createElement("script");
 	script.type = "text/javascript";
-	script.src = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=MML_HTMLorMML,Safe";
+	script.src = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML,Safe";
 	$("head").append(script);
 }
 
