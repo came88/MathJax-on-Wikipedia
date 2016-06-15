@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        MathJax on Wikipedias
 // @namespace   https://github.com/came88
-// @version     0.2.0
+// @version     0.2.1
 // @description Replace PNG math images with MathJax HTML+CSS rendering on all wikipedias
 // @author      Lorenzo Cameroni
 // @license     GPLv2; https://www.gnu.org/licenses/gpl-2.0.html
@@ -138,7 +138,7 @@ function wikipediaMathML(mathML) {
 	console.log("Replacing MathML/SVG/PNG with MathJax...");
 	// get LaTeX source annotated inside MathML
 	mathML.each(function(){
-		var img = $(this).parent().parent().find("img");
+		var img = $(this).parent().parent().find("img,meta");
 		var span = document.createElement("span");
 		span.className = "MathJax_hide_me";
 		$(img).wrap(span);
@@ -149,8 +149,8 @@ function wikipediaMathML(mathML) {
 		} else {
 			script.type = "math/tex";
 		}
-		$(script).text("\\displaystyle " + tex);
-		$(this).parent().append(script);
+		$(script).text(tex);
+		$(this).parent().parent().append(script);
 	});
 	var config = commonConfig;
 	// Disable fast Common-HTML preview (now there are SVG/PNG previews...)
