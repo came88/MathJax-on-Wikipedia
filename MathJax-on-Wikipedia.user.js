@@ -1,13 +1,16 @@
 // ==UserScript==
 // @name        MathJax on Wikipedias
 // @namespace   https://github.com/came88
-// @version     0.2.1
+// @version     0.2.2
 // @description Replace PNG math images with MathJax HTML+CSS rendering on all wikipedias
 // @author      Lorenzo Cameroni
 // @license     GPLv2; https://www.gnu.org/licenses/gpl-2.0.html
 // @homepage    https://github.com/came88/MathJax-on-Wikipedia
 // @downloadURL https://github.com/came88/MathJax-on-Wikipedia/raw/master/MathJax-on-Wikipedia.user.js
 // @match       https://*.wikipedia.org/wiki/*
+// @match       https://*.wikibooks.org/wiki/*
+// @match       http://www.wikiwand.com/*
+// @match       https://www.wikiwand.com/*
 // @require     https://code.jquery.com/jquery-1.12.4.min.js
 // @grant       unsafeWindow
 // ==/UserScript==
@@ -77,7 +80,8 @@ var commonConfig = {
 	}
 };
 
-function loadMathjax (url, config) {
+function loadMathjax (config) {
+	var url = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML,Safe";
 	var configScript = document.createElement("script");
 	configScript.type = "text/x-mathjax-config";
 	$(configScript).text(config);
@@ -86,6 +90,42 @@ function loadMathjax (url, config) {
 	loadScript.type = "text/javascript";
 	loadScript.src = url;
 	$("head").append(loadScript);
+}
+
+function compareRight(s1, s2) {
+	var ln = Math.min(s1.length, s2.length);
+	return s1.slice(-ln) === s2.slice(-ln);
+}
+
+var isWikiwand = compareRight(document.location.hostname, 'wikiwand.com');
+
+function replaceUnbalancedBraces(text) {
+	var stack = [];
+	var ret = text.split('');
+
+	for (var i = 0; i < text.length; ++i) {
+		if (text[i] == '\\') {
+			// handle special cases such as \left( \right)
+			if (text.substring(i, Math.min(text.length, i + 5)) == '\\left') {
+				i += 5;
+				continue;
+			}
+			if (text.substring(i, Math.min(text.length, i + 6)) == '\\right') {
+				i += 6;
+				continue;
+			}
+		} else if (text[i] == '(') {
+			stack.push(i);
+		} else if (text[i] == ')') {
+			if (stack.length) {
+				stack.pop();
+			} else {
+				ret[i] = '}';
+				// console.log('Found unbalanced brace');
+			}
+		}
+	}
+	return ret.join('');
 }
 
 function wikipediaPNG(images) {
@@ -98,6 +138,7 @@ function wikipediaPNG(images) {
 		} else {
 			script.type = "math/tex";
 		}
+		tex = (isWikiwand) ? replaceUnbalancedBraces(tex) : tex;
 		$(script).text("\\displaystyle " + tex);
 		$(this).after(script);
 		var span = document.createElement("span");
@@ -110,8 +151,7 @@ function wikipediaPNG(images) {
 	config["CHTML-preview"] = {
 		disabled: true
 	};
-	loadMathjax("https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML,Safe",
-		"MathJax.Hub.Config(" + JSON.stringify(config) + ");");
+	loadMathjax("MathJax.Hub.Config(" + JSON.stringify(config) + ");");
 }
 
 function wikipediaTextual(spans) {
@@ -120,6 +160,7 @@ function wikipediaTextual(spans) {
 	spans.each(function(){
 		var tex = $(this).text();
 		tex = tex.substring(1, tex.length - 2);
+		tex = (isWikiwand) ? replaceUnbalancedBraces(tex) : tex;
 		script = document.createElement("script");
 		if ($(this).hasClass("mwe-math-fallback-source-display")) {
 			script.type = "math/tex; mode=display";
@@ -130,8 +171,7 @@ function wikipediaTextual(spans) {
 		$(script).text("\\displaystyle " + tex);
 		$(this).after(script);
 	});
-	loadMathjax("https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML,Safe",
-		"MathJax.Hub.Config(" + JSON.stringify(commonConfig) + ");");
+	loadMathjax("MathJax.Hub.Config(" + JSON.stringify(commonConfig) + ");");
 }
 
 function wikipediaMathML(mathML) {
@@ -143,6 +183,7 @@ function wikipediaMathML(mathML) {
 		span.className = "MathJax_hide_me";
 		$(img).wrap(span);
 		var tex = $(this).find("annotation").text();
+		tex = (isWikiwand) ? replaceUnbalancedBraces(tex) : tex;
 		script = document.createElement("script");
 		if ($(this).parent().hasClass("mwe-math-fallback-source-display")) {
 			script.type = "math/tex; mode=display";
@@ -158,8 +199,7 @@ function wikipediaMathML(mathML) {
 	config["CHTML-preview"] = {
 		disabled: true
 	};
-	loadMathjax("https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML,Safe",
-		"MathJax.Hub.Config(" + JSON.stringify(config) + ");");
+	loadMathjax("MathJax.Hub.Config(" + JSON.stringify(config) + ");");
 }
 
 // Load MathJax only if no one else (the webpage, another browser extension...) has already loaded it
