@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        MathJax on Wikipedias
 // @namespace   https://github.com/came88
-// @version     0.2.2
+// @version     0.2.3
 // @description Replace PNG math images with MathJax HTML+CSS rendering on all wikipedias
 // @author      Lorenzo Cameroni
 // @license     GPLv2; https://www.gnu.org/licenses/gpl-2.0.html
@@ -81,7 +81,7 @@ var commonConfig = {
 };
 
 function loadMathjax (config) {
-	var url = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML,Safe";
+	var url = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS_HTML,Safe";
 	var configScript = document.createElement("script");
 	configScript.type = "text/x-mathjax-config";
 	$(configScript).text(config);
